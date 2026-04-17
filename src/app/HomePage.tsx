@@ -51,12 +51,12 @@ export function HomePage() {
   const upcomingEvents = filteredEvents.filter((ev) => !isEventLive(ev) && new Date(ev.date).getTime() > Date.now());
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full pt-4 md:pt-8 px-4 sm:px-6 lg:px-8 gap-8 pb-16 bg-[#0a0a0b] text-zinc-100">
+    <div className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full pt-4 md:pt-8 px-4 sm:px-6 lg:px-8 gap-8 pb-16 bg-white dark:bg-[#0a0a0b] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
       <div className="md:hidden flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-black text-white">Events</h1>
+        <h1 className="text-2xl font-black text-zinc-900 dark:text-white">Events</h1>
         <button 
           onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium text-zinc-300 hover:bg-white/10 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
         >
           <Filter className="w-4 h-4" /> Filters
         </button>
@@ -65,7 +65,7 @@ export function HomePage() {
       {isMobileFiltersOpen && (
         <div className="fixed inset-0 z-50 bg-[#0a0a0b]/95 backdrop-blur-xl p-4 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white">Filters</h2>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Filters</h2>
             <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 rounded-full hover:bg-white/10 text-zinc-400">
               <X className="w-6 h-6" />
             </button>
@@ -90,7 +90,7 @@ export function HomePage() {
         {liveEvents.length > 0 && (
           <section className="relative">
             <div className="absolute -left-10 top-0 bottom-0 w-[500px] bg-red-500/5 blur-[120px] rounded-full pointer-events-none"></div>
-            <h2 className="text-3xl font-black text-white mb-8 flex items-center gap-3">
+            <h2 className="text-3xl font-black text-zinc-900 dark:text-white mb-8 flex items-center gap-3">
               <div className="relative flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"></span>
@@ -104,7 +104,7 @@ export function HomePage() {
         {/* Upcoming Events Section */}
         {upcomingEvents.length > 0 && (
           <section>
-            <h2 className="text-3xl font-black text-white mb-8 flex items-center gap-3">
+            <h2 className="text-3xl font-black text-zinc-900 dark:text-white mb-8 flex items-center gap-3">
               <Zap className="w-6 h-6 text-indigo-400" />
               Upcoming Events
             </h2>

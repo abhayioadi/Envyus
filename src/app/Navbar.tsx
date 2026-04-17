@@ -13,7 +13,13 @@ import {
   CalendarClock,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Home,
+  Calendar,
+  ClipboardList,
+  Info,
+  Moon,
+  Sun
 } from "lucide-react";
 import { mockEvents, isEventLive } from "./mockData";
 
@@ -21,7 +27,55 @@ export function Navbar() {
   const [isEventsOpen, setIsEventsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDark, setIsDark] = React.useState(true);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    // Initial theme check
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+    
+    setIsDark(shouldBeDark);
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    // Check for View Transition API support
+    if (typeof document !== 'undefined' && (document as any).startViewTransition) {
+      (document as any).startViewTransition(() => {
+        setIsDark((prev) => {
+          const next = !prev;
+          if (next) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+          }
+          return next;
+        });
+      });
+    } else {
+      // Fallback for older browsers
+      setIsDark((prev) => {
+        const next = !prev;
+        if (next) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+        return next;
+      });
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,35 +85,36 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-white/10 h-16 transition-all duration-300">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-zinc-200 dark:border-white/10 h-16 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2 mr-6 shrink-0">
-          <Link to="/" className="flex items-center gap-2 text-white font-black text-xl hover:scale-105 transition-transform group">
+          <Link to="/" className="flex items-center gap-2 text-zinc-900 dark:text-white font-black text-xl hover:scale-105 transition-transform group">
             <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-1.5 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.4)] group-hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] transition-shadow">
               <CalendarDays className="h-5 w-5 text-white" />
             </div>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400">EventHub</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-white dark:to-zinc-400">EventHub</span>
           </Link>
         </div>
 
         {/* Search */}
         <div className="hidden md:block flex-1 max-w-md mx-4">
           <form onSubmit={handleSearch} className="relative group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-indigo-400 transition-colors" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-indigo-400 transition-colors" />
             <input
               type="text"
               placeholder="Search events, organizers, or topics..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-zinc-100 placeholder:text-zinc-600 focus:bg-white/10 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-full text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:bg-white dark:focus:bg-white/10 focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
             />
           </form>
         </div>
 
         {/* Links */}
-        <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-zinc-400">
-          <Link to="/" className="hover:text-white hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all">
+        <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+          <Link to="/" className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-white hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.5)] transition-all">
+            <Home className="h-4 w-4" />
             Home
           </Link>
           
@@ -69,7 +124,8 @@ export function Navbar() {
             onMouseEnter={() => setIsEventsOpen(true)}
             onMouseLeave={() => setIsEventsOpen(false)}
           >
-            <Link to="/events" className="flex items-center gap-1 hover:text-white transition-all cursor-pointer">
+            <Link to="/events" className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer">
+              <Calendar className="h-4 w-4" />
               Events <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isEventsOpen ? 'rotate-180 text-indigo-400' : ''}`} />
             </Link>
             
@@ -150,13 +206,28 @@ export function Navbar() {
             )}
           </div>
 
-          <Link to="/registration" className="hover:text-white transition-colors">
+          <Link to="/registration" className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <ClipboardList className="h-4 w-4" />
             Registration
           </Link>
 
-          <Link to="/about" className="hover:text-white transition-colors">
+          <Link to="/about" className="flex items-center gap-1.5 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <Info className="h-4 w-4" />
             About
           </Link>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? (
+              <Sun className="h-4 w-4 group-hover:rotate-45 transition-transform" />
+            ) : (
+              <Moon className="h-4 w-4 group-hover:-rotate-12 transition-transform" />
+            )}
+          </button>
 
           {/* User Icon */}
           <Link to="/profile" className="ml-4 p-2 rounded-full hover:bg-white/10 transition-colors text-zinc-400 hover:text-white">
@@ -199,18 +270,40 @@ export function Navbar() {
                 className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-zinc-100 focus:bg-white/10 focus:border-indigo-500 outline-none"
               />
             </form>
+            
+            <div className="flex items-center justify-between px-4 py-3 bg-white/5 border border-white/10 rounded-xl">
+              <span className="text-sm font-semibold text-zinc-300">Theme Preference</span>
+              <button
+                onClick={toggleTheme}
+                className="px-4 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 hover:text-white hover:bg-indigo-500 transition-all flex items-center gap-2"
+              >
+                {isDark ? (
+                  <>
+                    <Sun className="h-4 w-4" />
+                    <span className="text-xs font-black uppercase tracking-widest">Light</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-4 w-4" />
+                    <span className="text-xs font-black uppercase tracking-widest">Dark</span>
+                  </>
+                )}
+              </button>
+            </div>
 
             {/* Mobile Links */}
             <div className="flex flex-col space-y-2">
               <Link 
                 to="/" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold"
+                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold flex items-center gap-3"
               >
+                <Home className="h-5 w-5 text-indigo-400" />
                 Home
               </Link>
               
-              <Link to="/events" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 text-zinc-300 font-semibold flex items-center justify-between hover:bg-white/5 rounded-xl">
+              <Link to="/events" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 text-zinc-300 font-semibold flex items-center gap-3 hover:bg-white/5 rounded-xl">
+                <Calendar className="h-5 w-5 text-indigo-400" />
                 Events
               </Link>
 
@@ -237,16 +330,18 @@ export function Navbar() {
               <Link 
                 to="/registration" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold"
+                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold flex items-center gap-3"
               >
+                <ClipboardList className="h-5 w-5 text-indigo-400" />
                 Registration
               </Link>
               
               <Link 
                 to="/about" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold"
+                className="px-4 py-3 rounded-xl hover:bg-white/5 text-zinc-300 font-semibold flex items-center gap-3"
               >
+                <Info className="h-5 w-5 text-indigo-400" />
                 About
               </Link>
             </div>
